@@ -1,0 +1,7 @@
+export default function InfoIcon() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+        </svg>
+    );
+}

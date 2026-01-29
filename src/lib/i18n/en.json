@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "ImportFlow"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "empty": {
+      "title": "Welcome to ImportFlow",
+      "description": "There are no imports to show yet. Create your first import to get started.",
+      "cta": "Create new import"
+    }
+  },
+  "imports": {
+    "title": "Imports",
+    "empty": {
+      "title": "No imports found",
+      "description": "There are no imports in this view. Try changing filters or create a new import.",
+      "cta": "Create import"
+    },
+    "detail": {
+      "empty": {
+        "title": "Details not available",
+        "description": "We don’t have data for this import yet. Try again later or check overall status.",
+        "cta": "Back to imports"
+      }
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you’re looking for doesn’t exist or was moved.",
+      "ctaHome": "Back to home",
+      "ctaImports": "Go to imports"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Try again or go back to the dashboard.",
+      "ctaRetry": "Try again",
+      "ctaDashboard": "Go to dashboard"
+    }
+  }
+}

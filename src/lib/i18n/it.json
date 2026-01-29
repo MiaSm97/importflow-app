@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "ImportFlow"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "empty": {
+      "title": "Benvenuto in ImportFlow",
+      "description": "Non ci sono importazioni da mostrare. Inizia creando la tua prima importazione.",
+      "cta": "Crea nuova importazione"
+    }
+  },
+  "imports": {
+    "title": "Imports",
+    "empty": {
+      "title": "Nessuna importazione trovata",
+      "description": "Non ci sono importazioni in questa vista. Prova a cambiare i filtri o crea una nuova importazione.",
+      "cta": "Crea importazione"
+    },
+    "detail": {
+      "empty": {
+        "title": "Dettagli non disponibili",
+        "description": "Non abbiamo ancora dati per questa importazione. Riprova più tardi o controlla lo stato generale.",
+        "cta": "Torna agli import"
+      }
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Pagina non trovata",
+      "description": "La pagina che cerchi non esiste o è stata spostata.",
+      "ctaHome": "Torna alla home",
+      "ctaImports": "Vai agli import"
+    },
+    "generic": {
+      "title": "Qualcosa è andato storto",
+      "description": "Si è verificato un problema inatteso. Riprova o torna alla dashboard.",
+      "ctaRetry": "Riprova",
+      "ctaDashboard": "Vai alla dashboard"
+    }
+  }
+}
