@@ -122,3 +122,49 @@ src/
 ```bash
 npm install
 npm run dev
+
+## ☁️ Optional Supabase Setup (No Custom Backend)
+
+The app can use Supabase as external backend for imports.
+If Supabase env vars are missing, it automatically falls back to `localStorage`.
+
+1. Copy env file and set values:
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+2. In Supabase SQL editor, create the table:
+
+```sql
+create table if not exists public.imports (
+  id uuid primary key,
+  name text not null,
+  type text not null,
+  status text not null check (status in ('pending', 'completed', 'failed')),
+  progress integer null,
+  created_at timestamptz not null,
+  updated_at timestamptz not null
+);
+```
+
+3. Enable RLS and add policies (for quick testing):
+
+```sql
+alter table public.imports enable row level security;
+
+create policy "Allow read imports" on public.imports
+for select
+to anon
+using (true);
+
+create policy "Allow insert imports" on public.imports
+for insert
+to anon
+with check (true);
+```

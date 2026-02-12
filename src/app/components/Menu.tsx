@@ -6,6 +6,7 @@ import { useMenu } from '@/lib/context/MenuContext';
 import { redirectToSection } from '@/lib/navigation';
 import { Sections } from '@/lib/types/types';
 import { useTranslations } from 'next-intl';
+import Loading from './loading/Loading';
 
 export default function Menu({
   children,
@@ -15,7 +16,7 @@ export default function Menu({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
-  const { optionsMenu } = useMenu();
+  const { optionsMenu, isLoading } = useMenu();
 
   const tabs = useMemo(() => {
     if (optionsMenu.tabs && optionsMenu.tabs.length > 0) {
@@ -62,6 +63,7 @@ export default function Menu({
       </header>
 
       <main className="min-h-[calc(100vh-66px)] bg-bgmain p-3 sm:p-4">{children}</main>
+      {isLoading && <Loading />}
     </>
   );
 }

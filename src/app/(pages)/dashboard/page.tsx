@@ -5,17 +5,11 @@ import DashboardEmpty from "@/app/components/empty-states/DashboardEmpty";
 import ImportsTable from "@/app/components/imports-table/ImportsTable";
 import WarmingBanner from "@/app/components/warning/WarningBanner";
 import { handleExportImports } from "@/lib/commonFunctions";
-import { Import, ImportStatus } from "@/lib/types/types";
-import { useEffect, useState } from "react";
+import { useMenu } from "@/lib/context/MenuContext";
+import { ImportStatus } from "@/lib/types/types";
 
 export default function DashboardPage() {
-  const [imports, setImports] = useState<Import[]>([]);
-
-  useEffect(() => {
-    const raw = localStorage.getItem("imports");
-    const currentImports = raw ? JSON.parse(raw) : [];
-    setImports(currentImports);
-  }, []);
+  const { imports, importsLoaded } = useMenu();
 
   const pendingImports = imports.filter(
     (item) => item.status === ImportStatus.PENDING
@@ -32,6 +26,10 @@ export default function DashboardPage() {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
     .slice(0, 5);
+
+  if (!importsLoaded) {
+    return null;
+  }
 
   if (imports.length === 0) {
     return <DashboardEmpty />;

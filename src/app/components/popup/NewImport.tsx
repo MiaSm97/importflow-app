@@ -1,21 +1,21 @@
 import { useTranslations } from "next-intl";
 import Input from "../ui/input/Input";
 import { useState } from "react";
-import { ALLOWED_EXTENSIONS_BY_TYPE, Delimiter, Import, ImportType, MAX_FILE } from "@/lib/types/types";
+import { ALLOWED_EXTENSIONS_BY_TYPE, Delimiter, ImportType, MAX_FILE } from "@/lib/types/types";
 import DragNDrop from "../ui/dragndrop/DragNDrop";
 import { useMenu } from "@/lib/context/MenuContext";
 import Button from "../ui/button/Button";
 import { isFileTypeValid } from "@/lib/commonFunctions";
 import Box from "../box/Box";
+import { createImport as createImportRecord } from "@/lib/data/importsRepository";
 
 type NewImportProps = {
     toggle: () => void;
-    onCreate: (createdImport: Import) => void;
 }
 
-function NewImport({ toggle, onCreate }: NewImportProps) {
+function NewImport({ toggle }: NewImportProps) {
     const t = useTranslations();
-    const { toastAlert } = useMenu();
+    const { toastAlert, showLoader, hideLoader, addImport } = useMenu();
     const [name, setName] = useState('');
     const [type, setType] = useState<ImportType>(ImportType.CSV);
     const [files, setFiles] = useState<File[]>([]);
@@ -41,7 +41,7 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
 
     const removeFile = (file: File) => setFiles(prev => prev.filter(f => f !== file));
 
-    const createImport = () => {
+    const handleCreateImport = async () => {
         if (!name.trim()) {
             toastAlert(t("imports.new.nameError"));
             return;
@@ -51,21 +51,18 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
             return;
         }
 
-        const newImport: Import = {
-            id: crypto.randomUUID(),
-            name,
-            type,
-            status: "completed", // For demo purposes, we set it to completed directly
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+        showLoader();
+        try {
+            const createdImport = await createImportRecord({
+                name,
+                type,
+                status: "completed", // For demo purposes, we set it to completed directly
+            });
+            addImport(createdImport);
+            toggle();
+        } finally {
+            hideLoader();
         }
-
-        const raw = localStorage.getItem("imports");
-        const current = raw ? JSON.parse(raw) : [];
-        localStorage.setItem("imports", JSON.stringify([newImport, ...current]));
-        onCreate(newImport);
-
-        toggle();
 
     }
 
@@ -104,7 +101,7 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
             )}
             <div className="border-t-custom flex gap-2 pt-6 px-6">
                 <Button classname="w-full" label={t("imports.buttons.cancel")} type="secondary" onClick={toggle} />
-                <Button classname="w-full" label={t("imports.buttons.create")} onClick={createImport} />
+                <Button classname="w-full" label={t("imports.buttons.create")} onClick={handleCreateImport} />
             </div>
         </Box>
     )

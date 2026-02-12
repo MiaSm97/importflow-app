@@ -8,17 +8,16 @@ import Input from "@/app/components/ui/input/Input";
 import Modal from "@/app/components/ui/modal/Modal";
 import useModal from "@/app/components/ui/modal/useModal";
 import { handleExportImports } from "@/lib/commonFunctions";
-import { Import, ImportStatus } from "@/lib/types/types";
+import { useMenu } from "@/lib/context/MenuContext";
+import { ImportStatus } from "@/lib/types/types";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { CiExport } from "react-icons/ci";
 
 export default function ImportsPage() {
     const t = useTranslations();
+    const { imports, importsLoaded } = useMenu();
     const { isOpen, toggle } = useModal();
-
-    const [imports, setImports] = useState<Import[]>([]);
-    const [filteredImports, setFilteredImports] = useState<Import[]>([]);
     const [filter, setFilter] = useState<ImportStatus>(ImportStatus.ALL);
 
     const handleFilterImports = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -26,23 +25,16 @@ export default function ImportsPage() {
         setFilter(value);
     }
 
-    const handleCreateImport = (createdImport: Import) => {
-        setImports((prev) => [createdImport, ...prev]);
-    };
-
-    useEffect(() => {
-        const raw = localStorage.getItem("imports");
-        const currentImports = raw ? JSON.parse(raw) : [];
-        setImports(currentImports);
-    }, []);
-
-    useEffect(() => {
+    const filteredImports = useMemo(() => {
         if (filter === ImportStatus.ALL) {
-            setFilteredImports(imports);
-        } else {
-            setFilteredImports(imports.filter(i => i.status === filter));
+            return imports;
         }
+        return imports.filter(i => i.status === filter);
     }, [imports, filter]);
+
+    if (!importsLoaded) {
+        return null;
+    }
 
     return (
         <>
@@ -69,7 +61,7 @@ export default function ImportsPage() {
                 )}
             </div>
             <Modal className="px-0" isOpen={isOpen}>
-                <NewImport toggle={toggle} onCreate={handleCreateImport} />
+                <NewImport toggle={toggle} />
             </Modal>
         </>
     );
