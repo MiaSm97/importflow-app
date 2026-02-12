@@ -24,13 +24,12 @@
 }
 
 .alert {
-  background-color: var(--text-alert);
+  background-color: #da291c;
 }
 
 .info {
-  background-color: var(--primary-color);
+  background-color: #000000;
 }
-
 
 @keyframes fadeIn {
   from {

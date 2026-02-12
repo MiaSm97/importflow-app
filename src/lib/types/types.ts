@@ -18,3 +18,42 @@ export enum Sections {
   IMPORTS = "imports.title",
   DETAIL = "detail.title",
 }
+
+export enum ImportType {
+  CSV = "CSV",
+  EXCEL = "Excel",
+  XML = "XML",
+  JSON = "JSON",
+}
+
+export enum Delimiter {
+  COMMA = "comma",
+  SEMICOLON = "semicolon",
+  TAB = "tab",
+}
+
+export const MAX_FILE = 1;
+
+export type Import = {
+  id: string;
+  name: string;
+  type: ImportType;
+  status: "pending" | "completed" | "failed";
+  progress?: number; // 0 to 100, optional
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const ALLOWED_EXTENSIONS_BY_TYPE: Record<ImportType, string[]> = {
+  [ImportType.CSV]: ["csv"],
+  [ImportType.EXCEL]: ["xls", "xlsx"],
+  [ImportType.XML]: ["xml"],
+  [ImportType.JSON]: ["json"],
+};
+
+export enum ImportStatus {
+  ALL = "all",
+  PENDING = "pending",
+  COMPLETED = "completed",
+  FAILED = "failed",
+}

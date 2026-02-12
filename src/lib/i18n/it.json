@@ -12,6 +12,45 @@
   },
   "imports": {
     "title": "Imports",
+    "buttons": {
+      "export": "Esporta dati",
+      "new": "Nuovo import",
+      "cancel": "Annulla",
+      "create": "Crea"
+    },
+    "filter": "Filtra per stato",
+    "filterOptions": {
+      "all": "Tutti",
+      "completed": "Completati",
+      "pending": "In sospeso",
+      "failed": "Falliti"
+    },
+    "status": {
+      "completed": "Completato",
+      "pending": "In sospeso",
+      "failed": "Fallito"
+    },
+    "table": {
+      "name": "Nome",
+      "status": "Stato",
+      "updatedAt": "Ultimo aggiornamento",
+      "progress": "Progresso"
+    },
+    "new": {
+      "name": "Nome import",
+      "type": "Tipo di import",
+      "upload": "Carica file",
+      "dragndrop": "Trascina e rilascia il tuo file qui",
+      "dragndropHint": "CSV, JSON, XML o Excel (max. 50MB)",
+      "csvHint": "Delimitatore CSV",
+      "comma": "Virgola (,)",
+      "semicolon": "Punto e virgola (;)",
+      "Tab": "Tabulazione",
+      "noMoreFiles": "Puoi caricare al massimo {numberFiles} file.",
+      "fileTypeError": "Formato file non valido per {type}. Estensioni consentite: {allowed}.",
+      "nameError": "Il nome dell'importazione è obbligatorio.",
+      "fileError": "Il file è obbligatorio."
+    },
     "empty": {
       "title": "Nessuna importazione trovata",
       "description": "Non ci sono importazioni in questa vista. Prova a cambiare i filtri o crea una nuova importazione.",

@@ -27,15 +27,15 @@ module.exports = {
         bgPage: "#f0f5f8",
         bgAlert: "#ff476233",
         bgWarn: "#f9b20433",
+        bgPopup: "rgba(0, 0, 0, 0.7)",
+        textGray: "#828da0",
         bgSuccess: "#0bb68733",
         textSuccess: "#0bb687",
         bgPending: "#fde7b3",
         textAlert: "#ff4762",
         separator: "#d8d8d8",
         text: "#000",
-        textDarkGray: "#828da0",
         textLightGray: "#96a1b5",
-        textGray: "var(--text-gray)",
         bgBlue: "#0098ea",
         bgBtnSecondary: "#f0f5f8",
         bgmain: "#f3f4f7",
@@ -75,6 +75,9 @@ module.exports = {
         },
         '.border-l-custom': {
           borderLeft: '1px solid rgba(0, 0, 0, 0.1)',
+        },
+        '.border-custom': {
+          border: '1px solid rgba(0, 0, 0, 0.1)',
         },
         // Use core utilities with the `last:` variant instead of custom selectors.
       }, ['responsive', 'hover', 'last']);

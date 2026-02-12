@@ -12,6 +12,40 @@
   },
   "imports": {
     "title": "Imports",
+    "buttons": {
+      "export": "Export",
+      "new": "New import",
+      "cancel": "Cancel",
+      "create": "Create"
+    },
+    "filter": "Filter by status",
+    "filterOptions": {
+      "all": "All",
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "table": {
+      "name": "Name",
+      "status": "Status",
+      "updatedAt": "Last updated",
+      "progress": "Progress"
+    },
+    "new": {
+      "name": "Import name",
+      "type": "Import type",
+      "upload": "Upload file",
+      "dragndrop": "Drag and drop your file here",
+      "dragndropHint": "CSV, JSON, XML or Excel (max. 50MB)",
+      "csvHint": "CSV delimiter",
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "Tab": "Tab",
+      "noMoreFiles": "You can upload a maximum of {numberFiles} files.",
+      "fileTypeError": "Invalid file format for {type}. Allowed extensions: {allowed}.",
+      "nameError": "The import name is required.",
+      "fileError": "The file is required."
+    },
     "empty": {
       "title": "No imports found",
       "description": "There are no imports in this view. Try changing filters or create a new import.",
