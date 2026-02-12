@@ -6,8 +6,8 @@
     "title": "Dashboard",
     "empty": {
       "title": "Benvenuto in ImportFlow",
-      "description": "Non ci sono importazioni da mostrare. Inizia creando la tua prima importazione.",
-      "cta": "Crea nuova importazione"
+      "description": "Non ci sono import da mostrare. Inizia creando il tuo primo import.",
+      "cta": "Crea nuovo import"
     },
     "warning": {
       "title": "Alcuni import richiedono la tua attenzione",
@@ -58,9 +58,9 @@
       "fileError": "Il file è obbligatorio."
     },
     "empty": {
-      "title": "Nessuna importazione trovata",
-      "description": "Non ci sono importazioni in questa vista. Prova a cambiare i filtri o crea una nuova importazione.",
-      "cta": "Crea importazione"
+      "title": "Nessun import trovato",
+      "description": "Non ci sono import in questa sezione. Prova a cambiare i filtri o crea un nuovo import.",
+      "cta": "Nuovo import"
     },
     "detail": {
       "empty": {

@@ -1,17 +1,25 @@
-import T from '@/app/components/T';
+import { useTranslations } from 'use-intl';
+import Box from '../box/Box';
+import Button from '../ui/button/Button';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardEmpty() {
+  const t = useTranslations();
+  const router = useRouter();
+
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-slate-100">
-      <h2 className="text-lg font-semibold">
-        <T ns="dashboard.empty" id="title" />
+    <Box classname="w-full">
+      <h2 className="text-lg font-semibold text-textDark">
+        {t("dashboard.empty.title")}
       </h2>
-      <p className="mt-2 text-sm text-slate-400">
-        <T ns="dashboard.empty" id="description" />
+      <p className="mt-2 text-sm text-textGray">
+        {t("dashboard.empty.description")}
       </p>
-      <button className="mt-6 rounded-full bg-emerald-400 px-5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-emerald-300">
-        <T ns="dashboard.empty" id="cta" />
-      </button>
-    </div>
+      <Button
+        classname="mt-6 w-fit px-4 py-2 text-sm font-semibold"
+        label={t("dashboard.empty.cta")}
+        onClick={() => router.push('/imports')}
+      />
+    </Box>
   );
 }

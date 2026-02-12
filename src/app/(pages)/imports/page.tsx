@@ -1,5 +1,6 @@
 'use client';
 
+import ImportsEmpty from "@/app/components/empty-states/ImportsEmpty";
 import ImportsTable from "@/app/components/imports-table/ImportsTable";
 import NewImport from "@/app/components/popup/NewImport";
 import Button from "@/app/components/ui/button/Button";
@@ -61,7 +62,11 @@ export default function ImportsPage() {
                         <option value={ImportStatus.FAILED}>{t("imports.filterOptions.failed")}</option>
                     </Input>
                 </div>
-                <ImportsTable imports={filteredImports} />
+                {filteredImports.length === 0 ? (
+                    <ImportsEmpty onCtaClick={toggle} />
+                ) : (
+                    <ImportsTable imports={filteredImports} />
+                )}
             </div>
             <Modal className="px-0" isOpen={isOpen}>
                 <NewImport toggle={toggle} onCreate={handleCreateImport} />

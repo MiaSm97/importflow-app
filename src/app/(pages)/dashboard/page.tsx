@@ -1,6 +1,7 @@
 'use client';
 
 import Card from "@/app/components/card/Card";
+import DashboardEmpty from "@/app/components/empty-states/DashboardEmpty";
 import ImportsTable from "@/app/components/imports-table/ImportsTable";
 import WarmingBanner from "@/app/components/warning/WarningBanner";
 import { handleExportImports } from "@/lib/commonFunctions";
@@ -31,6 +32,10 @@ export default function DashboardPage() {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     )
     .slice(0, 5);
+
+  if (imports.length === 0) {
+    return <DashboardEmpty />;
+  }
 
   return (
     <div className="flex flex-col gap-6">
