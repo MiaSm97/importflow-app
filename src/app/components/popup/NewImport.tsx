@@ -6,6 +6,7 @@ import DragNDrop from "../ui/dragndrop/DragNDrop";
 import { useMenu } from "@/lib/context/MenuContext";
 import Button from "../ui/button/Button";
 import { isFileTypeValid } from "@/lib/commonFunctions";
+import Box from "../box/Box";
 
 type NewImportProps = {
     toggle: () => void;
@@ -69,16 +70,16 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <h1 className="text-[18px] font-bold px-4">{t("imports.buttons.new")}</h1>
-            <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="px-4 border-t-custom pt-8" classNameInput="w-full" />
-            <Input label={t('imports.new.type')} onChange={(e) => setType(e.target.value)} className="px-4" type="select" value={type} classNameInput="w-full">
+        <Box classname="flex border-none! p-0! flex-col gap-6">
+            <h1 className="text-[18px] font-bold px-6">{t("imports.buttons.new")}</h1>
+            <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="px-6 border-t-custom pt-8" classNameInput="w-full" />
+            <Input label={t('imports.new.type')} onChange={(e) => setType(e.target.value)} className="px-6" type="select" value={type} classNameInput="w-full">
                 <option value={ImportType.CSV}>{ImportType.CSV}</option>
                 <option value={ImportType.EXCEL}>{ImportType.EXCEL}</option>
                 <option value={ImportType.XML}>{ImportType.XML}</option>
                 <option value={ImportType.JSON}>{ImportType.JSON}</option>
             </Input>
-            <div className="px-4 flex flex-col">
+            <div className="px-6 flex flex-col">
                 <span className="text-textGray text-[12px]">{t("imports.new.upload")}</span>
                 <DragNDrop
                     removeFileCallback={removeFile}
@@ -92,7 +93,7 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
                     maxFiles={MAX_FILE} />
             </div>
             {type === ImportType.CSV && (
-                <div className="px-4 flex flex-col">
+                <div className="px-6 flex flex-col">
                     <span className="text-textGray text-[12px]">{t("imports.new.csvHint")}</span>
                     <div className="flex gap-4">
                         <Input label={t("imports.new.comma")} type="radio" checked={delimiter === Delimiter.COMMA} onChange={() => setDelimiter(Delimiter.COMMA)} />
@@ -101,11 +102,11 @@ function NewImport({ toggle, onCreate }: NewImportProps) {
                     </div>
                 </div>
             )}
-            <div className="border-t-custom flex gap-2 pt-6 px-4">
+            <div className="border-t-custom flex gap-2 pt-6 px-6">
                 <Button classname="w-full" label={t("imports.buttons.cancel")} type="secondary" onClick={toggle} />
                 <Button classname="w-full" label={t("imports.buttons.create")} onClick={createImport} />
             </div>
-        </div>
+        </Box>
     )
 }
 

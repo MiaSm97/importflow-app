@@ -14,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="it" className={nunito.variable}>
-      <body className="font-sans">{children}</body>
+    <html lang="it" className={`${nunito.variable} bg-bgmain`}>
+      <body className="font-sans bg-bgmain min-h-screen">{children}</body>
     </html>
   );
 }

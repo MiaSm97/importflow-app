@@ -8,10 +8,16 @@
       "title": "Benvenuto in ImportFlow",
       "description": "Non ci sono importazioni da mostrare. Inizia creando la tua prima importazione.",
       "cta": "Crea nuova importazione"
+    },
+    "warning": {
+      "title": "Alcuni import richiedono la tua attenzione",
+      "description": "Controlla lo stato degli import in corso per assicurarti che tutto proceda senza intoppi.",
+      "cta": "Visualizza imports"
     }
   },
   "imports": {
     "title": "Imports",
+    "latestImports": "Ultimi import",
     "buttons": {
       "export": "Esporta dati",
       "new": "Nuovo import",
@@ -22,12 +28,12 @@
     "filterOptions": {
       "all": "Tutti",
       "completed": "Completati",
-      "pending": "In sospeso",
+      "pending": "In corso",
       "failed": "Falliti"
     },
     "status": {
       "completed": "Completato",
-      "pending": "In sospeso",
+      "pending": "In corso",
       "failed": "Fallito"
     },
     "table": {

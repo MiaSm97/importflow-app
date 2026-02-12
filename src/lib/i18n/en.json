@@ -8,10 +8,16 @@
       "title": "Welcome to ImportFlow",
       "description": "There are no imports to show yet. Create your first import to get started.",
       "cta": "Create new import"
+    },
+    "warning": {
+      "title": "Some imports require your attention",
+      "description": "Check the status of ongoing imports to ensure everything proceeds smoothly.",
+      "cta": "View imports"
     }
   },
   "imports": {
     "title": "Imports",
+    "latestImports": "Latest imports",
     "buttons": {
       "export": "Export",
       "new": "New import",

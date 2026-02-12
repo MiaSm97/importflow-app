@@ -1,10 +1,50 @@
 'use client';
 
 import Card from "@/app/components/card/Card";
-import { ImportStatus } from "@/lib/types/types";
+import ImportsTable from "@/app/components/imports-table/ImportsTable";
+import WarmingBanner from "@/app/components/warning/WarningBanner";
+import { handleExportImports } from "@/lib/commonFunctions";
+import { Import, ImportStatus } from "@/lib/types/types";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
+  const [imports, setImports] = useState<Import[]>([]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("imports");
+    const currentImports = raw ? JSON.parse(raw) : [];
+    setImports(currentImports);
+  }, []);
+
+  const pendingImports = imports.filter(
+    (item) => item.status === ImportStatus.PENDING
+  ).length;
+  const failedImports = imports.filter(
+    (item) => item.status === ImportStatus.FAILED
+  ).length;
+  const completedImports = imports.filter(
+    (item) => item.status === ImportStatus.COMPLETED
+  ).length;
+  const latestImports = [...imports]
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )
+    .slice(0, 5);
+
   return (
-    <Card status={ImportStatus.ALL} numberOfImports={100} />
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card status={ImportStatus.ALL} numberOfImports={imports.length} />
+        <Card status={ImportStatus.PENDING} numberOfImports={pendingImports} />
+        <Card status={ImportStatus.FAILED} numberOfImports={failedImports} />
+        <Card
+          status={ImportStatus.COMPLETED}
+          numberOfImports={completedImports}
+        />
+      </div>
+      <ImportsTable onExport={() => handleExportImports(latestImports)} imports={latestImports} />
+      {failedImports > 0 && <WarmingBanner />}
+    </div>
   );
 }
