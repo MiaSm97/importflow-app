@@ -38,7 +38,7 @@ export type Import = {
   id: string;
   name: string;
   type: ImportType;
-  status: "pending" | "completed" | "failed";
+  status: ImportStatus;
   progress?: number; // 0 to 100, optional
   createdAt: string;
   updatedAt: string;

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getColor } from "@/lib/commonFunctions";
 import Box from "../box/Box";
 import { CiExport } from "react-icons/ci";
+import ProgressBar from "../bar/ProgressBar";
 
 type ImportsTableProps = {
     imports: Import[];
@@ -39,14 +40,14 @@ function ImportsTable({ imports, onExport }: ImportsTableProps) {
                 <div className="min-w-[700px]">
                     <div className="flex w-full border-b-custom px-4 pb-4 pt-4 text-textGray sm:px-6">
                         <span className="w-[35%]">{t("imports.table.name")}</span>
-                        <span className="w-[25%]">{t("imports.table.status")}</span>
-                        <span className="w-[15%]">{t("imports.table.progress")}</span>
+                        <span className="w-[15%] mr-2">{t("imports.table.status")}</span>
+                        <span className="w-[25%]">{t("imports.table.progress")}</span>
                         <span className="w-[25%]">{t("imports.table.updatedAt")}</span>
                     </div>
                     {paginatedImports.map((importItem) => (
                         <div key={importItem.id} className="flex w-full items-center border-b-custom px-4 py-3 text-sm sm:px-6">
-                            <span className="w-[35%] truncate pr-2">{importItem.name}</span>
-                            <span className="w-[25%]">
+                            <span className="w-[35%] truncate text-ellipsis pr-2">{importItem.name}</span>
+                            <span className="w-[15%] mr-2">
                                 <span
                                     className="inline-flex rounded-md px-3 py-1"
                                     style={{ backgroundColor: getColor(importItem.status) }}
@@ -54,7 +55,9 @@ function ImportsTable({ imports, onExport }: ImportsTableProps) {
                                     {t(`imports.status.${importItem.status.toLowerCase()}`)}
                                 </span>
                             </span>
-                            <span className="w-[15%]">{`${importItem.progress ?? 100}%`}</span> {/* For demo purposes, we set progress to 100% directly */}
+                            <div className="w-[25%]">
+                                <ProgressBar progress={importItem.progress} status={importItem.status} />
+                            </div> {/* For demo purposes, we set progress to 100% directly */}
                             <span className="w-[25%]">{new Date(importItem.updatedAt).toLocaleString()}</span>
                         </div>
                     ))}

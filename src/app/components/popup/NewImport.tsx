@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import Input from "../ui/input/Input";
 import { useState } from "react";
-import { ALLOWED_EXTENSIONS_BY_TYPE, Delimiter, ImportType, MAX_FILE } from "@/lib/types/types";
+import { ALLOWED_EXTENSIONS_BY_TYPE, Delimiter, ImportStatus, ImportType, MAX_FILE } from "@/lib/types/types";
 import DragNDrop from "../ui/dragndrop/DragNDrop";
 import { useMenu } from "@/lib/context/MenuContext";
 import Button from "../ui/button/Button";
@@ -56,7 +56,8 @@ function NewImport({ toggle }: NewImportProps) {
             const createdImport = await createImportRecord({
                 name,
                 type,
-                status: "completed", // For demo purposes, we set it to completed directly
+                status: ImportStatus.COMPLETED, // For demo purposes, we set it to completed directly
+                progress: 100,
             });
             addImport(createdImport);
             toggle();
@@ -67,16 +68,16 @@ function NewImport({ toggle }: NewImportProps) {
     }
 
     return (
-        <Box classname="flex border-none! p-0! flex-col gap-6">
-            <h1 className="text-[18px] font-bold px-6">{t("imports.buttons.new")}</h1>
-            <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="px-6 border-t-custom pt-8" classNameInput="w-full" />
-            <Input label={t('imports.new.type')} onChange={(e) => setType(e.target.value)} className="px-6" type="select" value={type} classNameInput="w-full">
+        <Box classname="flex border-none! px-0! flex-col gap-5 sm:gap-6">
+            <h1 className="px-4 text-[18px] font-bold sm:px-6">{t("imports.buttons.new")}</h1>
+            <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="border-t-custom px-4 pt-6 sm:px-6 sm:pt-8" classNameInput="w-full" />
+            <Input label={t('imports.new.type')} onChange={(e) => setType(e.target.value)} className="px-4 sm:px-6" type="select" value={type} classNameInput="w-full">
                 <option value={ImportType.CSV}>{ImportType.CSV}</option>
                 <option value={ImportType.EXCEL}>{ImportType.EXCEL}</option>
                 <option value={ImportType.XML}>{ImportType.XML}</option>
                 <option value={ImportType.JSON}>{ImportType.JSON}</option>
             </Input>
-            <div className="px-6 flex flex-col">
+            <div className="flex flex-col px-4 sm:px-6">
                 <span className="text-textGray text-[12px]">{t("imports.new.upload")}</span>
                 <DragNDrop
                     removeFileCallback={removeFile}
@@ -90,16 +91,16 @@ function NewImport({ toggle }: NewImportProps) {
                     maxFiles={MAX_FILE} />
             </div>
             {type === ImportType.CSV && (
-                <div className="px-6 flex flex-col">
+                <div className="flex flex-col px-4 sm:px-6">
                     <span className="text-textGray text-[12px]">{t("imports.new.csvHint")}</span>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
                         <Input label={t("imports.new.comma")} type="radio" checked={delimiter === Delimiter.COMMA} onChange={() => setDelimiter(Delimiter.COMMA)} />
                         <Input label={t("imports.new.semicolon")} type="radio" checked={delimiter === Delimiter.SEMICOLON} onChange={() => setDelimiter(Delimiter.SEMICOLON)} />
                         <Input label={t("imports.new.Tab")} type="radio" checked={delimiter === Delimiter.TAB} onChange={() => setDelimiter(Delimiter.TAB)} />
                     </div>
                 </div>
             )}
-            <div className="border-t-custom flex gap-2 pt-6 px-6">
+            <div className="border-t-custom flex flex-col-reverse gap-2 px-4 pb-4 pt-5 sm:flex-row sm:px-6 sm:pb-0 sm:pt-6">
                 <Button classname="w-full" label={t("imports.buttons.cancel")} type="secondary" onClick={toggle} />
                 <Button classname="w-full" label={t("imports.buttons.create")} onClick={handleCreateImport} />
             </div>

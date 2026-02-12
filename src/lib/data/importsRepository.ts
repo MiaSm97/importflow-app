@@ -1,4 +1,4 @@
-import { Import } from "@/lib/types/types";
+import { Import, ImportStatus } from "@/lib/types/types";
 
 const STORAGE_KEY = "imports";
 
@@ -73,7 +73,7 @@ const createLocalImport = (input: CreateImportInput): Import => {
     id: crypto.randomUUID(),
     name: input.name,
     type: input.type,
-    status: input.status ?? "completed",
+    status: input.status ?? ImportStatus.COMPLETED,
     progress: input.progress,
     createdAt: now,
     updatedAt: now,
@@ -94,7 +94,7 @@ export const listImports = async (): Promise<Import[]> => {
           apikey: config.anonKey,
           Authorization: `Bearer ${config.anonKey}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -108,7 +108,9 @@ export const listImports = async (): Promise<Import[]> => {
   }
 };
 
-export const createImport = async (input: CreateImportInput): Promise<Import> => {
+export const createImport = async (
+  input: CreateImportInput,
+): Promise<Import> => {
   const config = getSupabaseConfig();
   const newImport = createLocalImport(input);
 

@@ -7,6 +7,7 @@ import { redirectToSection } from '@/lib/navigation';
 import { Sections } from '@/lib/types/types';
 import { useTranslations } from 'next-intl';
 import Loading from './loading/Loading';
+import Button from './ui/button/Button';
 
 export default function Menu({
   children,
@@ -44,19 +45,15 @@ export default function Menu({
           <h1 className="text-[20px] font-medium sm:py-4 sm:text-[22px]">
             {optionsMenu.title}
           </h1>
-          <nav className="flex flex-wrap gap-2 pb-1 sm:gap-6 sm:pb-0">
+          <nav className="flex flex-wrap pb-1 sm:pb-0">
             {tabs.map((tab) => (
-              <button
+              <Button
                 key={tab.label}
+                classname={`w-[100px] ${!tab.selected ? 'border-none!' : ''}`}
+                label={tab.label}
+                type={tab.selected ? 'primary' : 'secondary'}
                 onClick={tab.onClick}
-                type="button"
-                className={`my-0 cursor-pointer whitespace-nowrap rounded-md px-2 py-1 transition-colors sm:my-3 ${tab.selected
-                  ? "bg-bgmain"
-                  : ""
-                  }`}
-              >
-                {tab.label}
-              </button>
+              />
             ))}
           </nav>
         </div>

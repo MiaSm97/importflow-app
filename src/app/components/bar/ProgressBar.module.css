@@ -1,0 +1,16 @@
+@reference "../../globals.css";
+
+.progress {
+  margin-bottom: 2px;
+  margin-right: 12px;
+  @apply rounded-md h-2 w-[95%];
+}
+
+.progress::-webkit-progress-bar {
+  @apply bg-textGray rounded-md;
+}
+
+.progress::-webkit-progress-value {
+  background-color: var(--progress-color);
+  @apply rounded-md;
+}
