@@ -1,6 +1,6 @@
 export type MenuOptions = {
   title?: string;
-  backButtonUrl?: any;
+  backButtonUrl?: string;
   tabs?: { label: Sections; onClick: () => void; selected: boolean }[];
   customButtons?: { label: string; onClick: () => void; primary: boolean }[];
   search?: { text: string; onChangeSearch: (text: string) => void };

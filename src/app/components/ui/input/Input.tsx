@@ -2,6 +2,10 @@ import React, { forwardRef } from "react";
 import classes from "./Input.module.css";
 import SearchIcon from "../icons/SearchIcon";
 
+type InputChangeEvent = React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+>;
+
 export type InputProps = {
     className?: string;
     type?: string;
@@ -19,11 +23,9 @@ export type InputProps = {
     classNameInput?: string;
     placeholder?: string;
     step?: string;
-    onInvalid?: (e: any) => void;
-    onBlur?: (e: any) => void;
-    onChange?: (
-        event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement> | any
-    ) => void;
+    onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    onChange?: (event: InputChangeEvent) => void;
 };
 
 const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
