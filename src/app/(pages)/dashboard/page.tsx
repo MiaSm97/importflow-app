@@ -7,9 +7,14 @@ import WarmingBanner from "@/app/components/warning/WarningBanner";
 import { handleExportImports } from "@/lib/commonFunctions";
 import { useMenu } from "@/lib/context/MenuContext";
 import { ImportStatus } from "@/lib/types/types";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const { imports, importsLoaded } = useMenu();
+  const { imports, importsLoaded, loadAllImports } = useMenu();
+
+  useEffect(() => {
+    void loadAllImports();
+  }, [loadAllImports]);
 
   const pendingImports = imports.filter(
     (item) => item.status === ImportStatus.PENDING

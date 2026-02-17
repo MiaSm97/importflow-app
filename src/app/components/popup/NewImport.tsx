@@ -71,7 +71,9 @@ function NewImport({ toggle }: NewImportProps) {
         <Box classname="flex border-none! px-0! flex-col gap-5 sm:gap-6">
             <h1 className="px-4 text-[18px] font-bold sm:px-6">{t("imports.buttons.new")}</h1>
             <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="border-t-custom px-4 pt-6 sm:px-6 sm:pt-8" classNameInput="w-full" />
-            <Input label={t('imports.new.type')} onChange={(e) => setType(e.target.value)} className="px-4 sm:px-6" type="select" value={type} classNameInput="w-full">
+            <Input label={t('imports.new.type')} onChange={(e) => {
+                console.log(e)
+                setType(e.target.value as ImportType)}} className="px-4 sm:px-6" type="select" value={type} classNameInput="w-full">
                 <option value={ImportType.CSV}>{ImportType.CSV}</option>
                 <option value={ImportType.EXCEL}>{ImportType.EXCEL}</option>
                 <option value={ImportType.XML}>{ImportType.XML}</option>

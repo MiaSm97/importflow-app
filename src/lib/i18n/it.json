@@ -68,6 +68,9 @@
         "description": "Non abbiamo ancora dati per questa importazione. Riprova più tardi o controlla lo stato generale.",
         "cta": "Torna agli import"
       }
+    },
+    "repository": {
+      "localMode": "Stai lavorando in locale: i dati verranno salvati nel browser."
     }
   },
   "errors": {

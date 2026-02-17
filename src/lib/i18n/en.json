@@ -63,6 +63,9 @@
         "description": "We don’t have data for this import yet. Try again later or check overall status.",
         "cta": "Back to imports"
       }
+    },
+    "repository": {
+      "localMode": "You are working in local mode: data will be saved in your browser."
     }
   },
   "errors": {

@@ -1,12 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import styles from "@/app/components/ui/Toast/Toast.module.css";
 import Toast from "@/app/components/ui/Toast/Toast";
 import { Import, MenuOptions } from "@/lib/types/types";
 import { useTranslations } from "next-intl";
-import { listImports } from "@/lib/data/importsRepository";
-import { useEffect } from "react";
+import {
+    IMPORTS_REPOSITORY_LOCAL_MODE_EVENT,
+    listImports,
+} from "@/lib/data/importsRepository";
 
 type MenuContextProps = {
     optionsMenu: MenuOptions;
@@ -19,6 +29,7 @@ type MenuContextProps = {
     imports: Import[];
     importsLoaded: boolean;
     addImport: (newImport: Import) => void;
+    loadAllImports: () => Promise<void>;
 };
 
 type ToastType = {
@@ -46,6 +57,8 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const [loadingCount, setLoadingCount] = useState(0);
     const [imports, setImports] = useState<Import[]>([]);
     const [importsLoaded, setImportsLoaded] = useState(false);
+    const localModeToastShownRef = useRef(false);
+    const loadingAllImportsRef = useRef<Promise<void> | null>(null);
 
     const addToast = useCallback((message: string, type: "alert" | "info") => {
         setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
@@ -61,32 +74,48 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const addImport = useCallback((newImport: Import) => {
         setImports((prev) => [newImport, ...prev]);
     }, []);
-    const isLoading = loadingCount > 0;
+    const loadAllImports = useCallback(async () => {
+        if (importsLoaded) {
+            return;
+        }
 
-    useEffect(() => {
-        let isMounted = true;
+        if (loadingAllImportsRef.current) {
+            await loadingAllImportsRef.current;
+            return;
+        }
 
-        const loadInitialImports = async () => {
+        const loadingPromise = (async () => {
             showLoader();
             try {
                 const currentImports = await listImports();
-                if (isMounted) {
-                    setImports(currentImports);
-                }
+                setImports(currentImports);
+                setImportsLoaded(true);
             } finally {
-                if (isMounted) {
-                    setImportsLoaded(true);
-                }
                 hideLoader();
+                loadingAllImportsRef.current = null;
             }
+        })();
+
+        loadingAllImportsRef.current = loadingPromise;
+        await loadingPromise;
+    }, [hideLoader, importsLoaded, showLoader]);
+    const isLoading = loadingCount > 0;
+
+    useEffect(() => {
+        const onLocalMode = () => {
+            if (localModeToastShownRef.current) {
+                return;
+            }
+
+            localModeToastShownRef.current = true;
+            toastInfo(t("imports.repository.localMode"));
         };
 
-        loadInitialImports();
-
+        window.addEventListener(IMPORTS_REPOSITORY_LOCAL_MODE_EVENT, onLocalMode);
         return () => {
-            isMounted = false;
+            window.removeEventListener(IMPORTS_REPOSITORY_LOCAL_MODE_EVENT, onLocalMode);
         };
-    }, [hideLoader, showLoader]);
+    }, [t, toastInfo]);
 
     const contextValue = useMemo(
         () => ({
@@ -100,8 +129,9 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             imports,
             importsLoaded,
             addImport,
+            loadAllImports,
         }),
-        [optionsMenu, toastAlert, toastInfo, isLoading, showLoader, hideLoader, imports, importsLoaded, addImport]
+        [optionsMenu, toastAlert, toastInfo, isLoading, showLoader, hideLoader, imports, importsLoaded, addImport, loadAllImports]
     );
 
     return (

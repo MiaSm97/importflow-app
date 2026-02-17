@@ -1,145 +1,120 @@
 # ImportFlow
 
-UX-focused SaaS dashboard for managing data imports, built with Next.js and Tailwind CSS.
+ImportFlow is a frontend dashboard to monitor and manage data imports with clear UX states (loading, empty, error, success), built with Next.js App Router and TypeScript.
 
-ImportFlow is a frontend application designed to help non-technical users monitor, understand, and manage data import processes without dealing with logs or technical complexity.
+## Features
 
----
+- Dashboard with KPI cards (all, pending, failed, completed)
+- Latest imports table (top 5 by `updatedAt`)
+- Warning banner when failed imports are present
+- Imports page with status filter (`all`, `pending`, `completed`, `failed`)
+- Create import modal with:
+  - name validation
+  - file drag-and-drop
+  - file type validation (`CSV`, `Excel`, `XML`, `JSON`)
+  - CSV delimiter selection (`comma`, `semicolon`, `tab`)
+- CSV export for imports list
+- Global loader overlay
+- Toast notifications (alert/info)
+- Internationalization with `next-intl` (`it`, `en`)
+- Optional Supabase persistence with automatic fallback to `localStorage`
 
-## 🎯 Project Purpose
+## Tech Stack
 
-The goal of this project is to showcase a **product-oriented frontend approach**, focusing on:
-
-- clear and reassuring user experience
-- async state management (loading, progress, error, retry)
-- realistic SaaS dashboard architecture
-- thoughtful UX copy and edge case handling
-- clean and scalable frontend structure
-
-The project is intentionally frontend-only, with mocked data and APIs, to focus on **UX and architectural decisions**.
-
----
-
-## 👤 Target Users
-
-- Operations / Admin users
-- Non-technical stakeholders
-- Business environments (SaaS, backoffice tools)
-
-User needs:
-- understand import status at a glance
-- receive clear feedback when something goes wrong
-- know what actions are available at every step
-
----
-
-## 🧭 UX Overview
-
-### Dashboard
-Provides an immediate overview of the system status.
-
-- KPI cards (running, completed, failed imports)
-- Latest imports summary
-- Contextual messages for:
-  - all good
-  - issues requiring attention
-  - first-time usage (empty state)
-
----
-
-### Imports List
-Allows users to monitor and manage all imports.
-
-- Table with status badges and progress indicators
-- Simple filtering
-- Clear empty and loading states
-
-Import statuses are expressed in **human-readable language**, not technical codes.
-
----
-
-### Import Details
-Helps users understand what is happening and what to do next.
-
-- Visual step progression (upload → validation → processing → completed)
-- Progress feedback
-- Error explanations in plain language
-- Contextual actions (retry, duplicate, cancel)
-
----
-
-### Create Import Flow
-Guides users through the creation of a new import.
-
-- Step-by-step form
-- Inline validation
-- Clear confirmation and submission feedback
-
----
-
-## 🎨 UX Principles
-
-- No unnecessary technical terminology
-- Explicit handling of all UI states (loading, empty, error)
-- Calm and reassuring tone of voice
-- The system never blames the user
-
----
-
-## 🛠️ Tech Stack
-
-- Next.js (App Router)
+- Next.js 16 (App Router)
+- React (see `package.json` for current version)
 - TypeScript
-- Tailwind CSS
-- TanStack Query
-- Zod
-- Mocked APIs / data
+- Tailwind CSS 4
+- next-intl
+- react-icons
 
----
+## Routes
 
-## 🗂️ Project Structure
+- `/` -> app entry page
+- `/dashboard` -> KPI + latest imports
+- `/imports` -> list, filter, export, create modal
 
+## Data Layer
+
+Data access is implemented in `src/lib/data/importsRepository.ts`.
+
+- If `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are configured, the app reads/writes imports via Supabase REST API.
+- If config is missing or request fails, it falls back to browser `localStorage` (`imports` key).
+
+## Project Structure
+
+```text
 src/
-├─ app/
-│ ├─ dashboard/
-│ ├─ imports/
-│ │ ├─ page.tsx
-│ │ └─ [id]/
-│ └─ layout.tsx
-├─ components/
-│ ├─ ui/
-│ ├─ dashboard/
-│ └─ imports/
-├─ hooks/
-├─ services/
-├─ lib/
-└─ types/
+  app/
+    (pages)/
+      dashboard/page.tsx
+      imports/page.tsx
+      layout.tsx
+    components/
+      ui/
+      card/
+      popup/
+      imports-table/
+      empty-states/
+    layout.tsx
+    page.tsx
+  lib/
+    context/MenuContext.tsx
+    data/importsRepository.ts
+    i18n/{it,en}.json
+    types/types.ts
+```
 
----
+## Prerequisites
 
-## 🚀 Getting Started
+- Node.js `v20.9.0`
+- npm `v10.1.0`
+
+## Getting Started
+
+1. Install dependencies
 
 ```bash
 npm install
+```
+
+2. Run development server
+
+```bash
 npm run dev
+```
 
-## ☁️ Optional Supabase Setup (No Custom Backend)
+3. Build for production
 
-The app can use Supabase as external backend for imports.
-If Supabase env vars are missing, it automatically falls back to `localStorage`.
+```bash
+npm run build
+npm start
+```
 
-1. Copy env file and set values:
+## Scripts
+
+- `npm run dev` - start dev server
+- `npm run build` - build app
+- `npm start` - run production build
+- `npm run lint` - run Next.js lint
+- `npm test` - currently placeholder script
+
+## Optional Supabase Setup
+
+1. Create `.env.local` from example:
 
 ```bash
 cp .env.example .env.local
 ```
+
+2. Set environment variables:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
-2. In Supabase SQL editor, create the table:
+3. Create table in Supabase SQL editor:
 
 ```sql
 create table if not exists public.imports (
@@ -153,7 +128,7 @@ create table if not exists public.imports (
 );
 ```
 
-3. Enable RLS and add policies (for quick testing):
+4. Enable RLS and basic anon policies (for quick testing):
 
 ```sql
 alter table public.imports enable row level security;

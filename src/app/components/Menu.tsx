@@ -39,7 +39,7 @@ export default function Menu({
   }, [optionsMenu.tabs, pathname, router, t]);
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       <header className="flex border-b-custom bg-white shadow-sm">
         <div className="flex w-full flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-8 sm:py-0">
           <h1 className="text-[20px] font-medium sm:py-4 sm:text-[22px]">
@@ -59,8 +59,8 @@ export default function Menu({
         </div>
       </header>
 
-      <main className="min-h-[calc(100vh-66px)] bg-bgmain p-3 sm:p-4">{children}</main>
+      <main className="min-h-0 flex-1 overflow-y-auto bg-bgmain p-3 sm:p-4">{children}</main>
       {isLoading && <Loading />}
-    </>
+    </div>
   );
 }
