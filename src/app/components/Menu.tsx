@@ -20,6 +20,7 @@ export default function Menu({
   const { optionsMenu, isLoading } = useMenu();
 
   const tabs = useMemo(() => {
+    // Allow pages to override tabs via context; otherwise use app defaults.
     if (optionsMenu.tabs && optionsMenu.tabs.length > 0) {
       return optionsMenu.tabs;
     }

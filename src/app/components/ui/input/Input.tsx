@@ -116,6 +116,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
 
             {type !== "text-area" && type !== "select" && type !== "checkbox" && type !== "radio" && type !== 'date' && (
                 <div className="relative w-full">
+                    {/* Shared default input branch (text, number, search, etc.). */}
                     <input
                         ref={ref as React.Ref<HTMLInputElement>}
                         name={name}
@@ -134,6 +135,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
                         placeholder={placeholder}
                     />
                     {type === "search" && (
+                        // Icon is absolutely positioned so the input padding stays consistent.
                         <div className="absolute top-1.25 left-1">
                             {SearchIcon()}
                         </div>

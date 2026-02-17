@@ -2,8 +2,8 @@
 <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>D23D91C6-94D0-4E7B-9F59-AA3BE0F94C61</title>
     <g id="Task" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <g id="302_Task" transform="translate(-609.000000, -367.000000)">
-            <g id="icon/16/btn_delete_small" transform="translate(609.000000, 367.000000)">
+        <g id="302_Task" transform="t(-609.000000, -367.000000)">
+            <g id="icon/16/btn_delete_small" transform="t(609.000000, 367.000000)">
                 <circle id="Oval" fill="#FFFFFF" cx="8" cy="8" r="6"></circle>
                 <line x1="5.0035501" y1="5" x2="11.0035501" y2="11" id="Stroke-1" stroke="#000000"></line>
                 <line x1="11.0035501" y1="5" x2="5.0035501" y2="11" id="Stroke-3" stroke="#000000"></line>

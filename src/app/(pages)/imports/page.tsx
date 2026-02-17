@@ -12,6 +12,7 @@ import { useMenu } from "@/lib/context/MenuContext";
 import { listImportsPage } from "@/lib/data/importsRepository";
 import { Import, ImportStatus } from "@/lib/types/types";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CiExport } from "react-icons/ci";
 
@@ -19,6 +20,7 @@ const PAGE_SIZE = 5;
 
 export default function ImportsPage() {
     const t = useTranslations();
+    const router = useRouter();
     const { imports } = useMenu();
     const { isOpen, toggle } = useModal();
     const [filter, setFilter] = useState<ImportStatus>(ImportStatus.ALL);
@@ -26,24 +28,31 @@ export default function ImportsPage() {
     const [currentImports, setCurrentImports] = useState<Import[]>([]);
     const [totalItems, setTotalItems] = useState(0);
     const [isLoadingImports, setIsLoadingImports] = useState(true);
+    // In-memory page cache: key = "<status>:<page>".
+    // This prevents re-fetching pages already visited in this session.
     const cacheRef = useRef<Record<string, Import[]>>({});
+    // Stores total count per filter to keep pagination stable without extra calls.
     const totalsByFilterRef = useRef<Record<string, number>>({});
+    // Guards against out-of-order async responses when users switch quickly.
     const requestIdRef = useRef(0);
     const previousImportsCountRef = useRef(imports.length);
 
-    const handleFilterImports = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value as ImportStatus;
-        setFilter(value);
+    const handleFilterImports = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedStatus = event.target.value as ImportStatus;
+        setFilter(selectedStatus);
         setCurrentPage(1);
     }
 
+    const getPageCacheKey = useCallback((status: ImportStatus, page: number) => `${status}:${page}`, []);
+
     const loadImportsPage = useCallback(async (status: ImportStatus, page: number) => {
         const requestId = ++requestIdRef.current;
-        const pageKey = `${status}:${page}`;
+        const pageKey = getPageCacheKey(status, page);
         const cachedPage = cacheRef.current[pageKey];
         const cachedTotal = totalsByFilterRef.current[status];
 
         if (cachedPage) {
+            // Fast path: serve from cache without network roundtrip.
             setCurrentImports(cachedPage);
             setTotalItems(cachedTotal ?? cachedPage.length);
             setIsLoadingImports(false);
@@ -58,6 +67,7 @@ export default function ImportsPage() {
         });
 
         if (requestId !== requestIdRef.current) {
+            // A newer request finished later; ignore this stale response.
             return;
         }
 
@@ -66,7 +76,7 @@ export default function ImportsPage() {
         setCurrentImports(imports);
         setTotalItems(total);
         setIsLoadingImports(false);
-    }, []);
+    }, [getPageCacheKey]);
 
     useEffect(() => {
         void loadImportsPage(filter, currentPage);
@@ -77,6 +87,7 @@ export default function ImportsPage() {
             return;
         }
 
+        // Data changed globally (e.g. new import): invalidate cache and reload page 1.
         previousImportsCountRef.current = imports.length;
         cacheRef.current = {};
         totalsByFilterRef.current = {};
@@ -89,11 +100,12 @@ export default function ImportsPage() {
     const handleExportFilteredImports = useCallback(async () => {
         const cachedTotal = totalsByFilterRef.current[filter] ?? totalItems;
         const pageCount = Math.max(1, Math.ceil(cachedTotal / PAGE_SIZE));
-        const exports: Import[] = [];
+        const importsToExport: Import[] = [];
 
         for (let page = 1; page <= pageCount; page += 1) {
-            const pageKey = `${filter}:${page}`;
+            const pageKey = getPageCacheKey(filter, page);
             if (!cacheRef.current[pageKey]) {
+                // Export must include all rows, so fetch only missing pages.
                 const { imports } = await listImportsPage({
                     limit: PAGE_SIZE,
                     offset: (page - 1) * PAGE_SIZE,
@@ -101,11 +113,11 @@ export default function ImportsPage() {
                 });
                 cacheRef.current[pageKey] = imports;
             }
-            exports.push(...cacheRef.current[pageKey]);
+            importsToExport.push(...cacheRef.current[pageKey]);
         }
 
-        handleExportImports(exports);
-    }, [filter, totalItems]);
+        handleExportImports(importsToExport);
+    }, [filter, getPageCacheKey, totalItems]);
 
     return (
         <>
@@ -140,6 +152,7 @@ export default function ImportsPage() {
                             imports={currentImports}
                             mobileScrollable
                             isLoading={isLoadingImports}
+                            onRowClick={(importItem) => router.push(`/imports/${importItem.id}/detail`)}
                             currentPage={currentPage}
                             totalPages={totalPages}
                             onNextPageChange={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}

@@ -6,12 +6,14 @@ import { getColor } from "@/lib/commonFunctions";
 import Box from "../box/Box";
 import { CiExport } from "react-icons/ci";
 import ProgressBar from "../bar/ProgressBar";
+import LoadData from "../loading/LoadData";
 
 type ImportsTableProps = {
     imports: Import[];
     onExport?: () => void;
     mobileScrollable?: boolean;
     isLoading?: boolean;
+    onRowClick?: (importItem: Import) => void;
     currentPage?: number;
     totalPages?: number;
     onNextPageChange?: () => void;
@@ -23,6 +25,7 @@ function ImportsTable({
     onExport,
     mobileScrollable = false,
     isLoading = false,
+    onRowClick,
     currentPage,
     totalPages,
     onNextPageChange,
@@ -31,6 +34,9 @@ function ImportsTable({
     const t = useTranslations();
     const [localPage, setLocalPage] = useState(1);
     const itemsPerPage = 5;
+    // This table can work in two modes:
+    // - local pagination (legacy/dashboard)
+    // - controlled pagination (imports page, data already sliced by server)
     const isServerPaginated = typeof currentPage === "number"
         && typeof totalPages === "number"
         && typeof onNextPageChange === "function"
@@ -47,9 +53,11 @@ function ImportsTable({
         ? imports
         : imports.slice((localPage - 1) * itemsPerPage, localPage * itemsPerPage);
     const formatUpdatedAt = (date: string) => new Date(date).toLocaleString();
+    // Keep skeleton rows aligned with page size to avoid layout jumps while loading.
     const skeletonRows = Array.from({ length: itemsPerPage }, (_, index) => index);
 
     useEffect(() => {
+        // If filters/data reduce the total amount, clamp to the last valid page.
         if (!isServerPaginated && localPage > safeTotalPages) {
             setLocalPage(safeTotalPages);
         }
@@ -69,14 +77,15 @@ function ImportsTable({
             <div className={`sm:hidden ${mobileScrollable ? "min-h-0 flex-1 overflow-y-auto" : ""}`}>
                 {isLoading ? skeletonRows.map((index) => (
                     <div key={`mobile-skeleton-${index}`} className={`px-4 py-4 ${index !== itemsPerPage - 1 ? "border-b-custom" : ""}`}>
-                        <div className="mb-3 h-4 w-2/3 animate-pulse rounded bg-bgBtnSecondary" />
-                        <div className="mb-2 h-3 w-full animate-pulse rounded bg-bgBtnSecondary" />
-                        <div className="h-3 w-1/2 animate-pulse rounded bg-bgBtnSecondary" />
+                        <LoadData className="mb-3 h-4 w-2/3" />
+                        <LoadData className="mb-2 h-3 w-full" />
+                        <LoadData className="h-3 w-1/2" />
                     </div>
                 )) : paginatedImports.map((importItem, index) => (
                     <div
                         key={importItem.id}
-                        className={`px-4 py-4 ${index !== itemsPerPage - 1 ? "border-b-custom" : ""}`}
+                        className={`px-4 py-4 ${index !== paginatedImports.length - 1 ? "border-b-custom" : ""} ${onRowClick ? "cursor-pointer transition-colors hover:bg-bgBtnSecondary" : ""}`}
+                        onClick={() => onRowClick?.(importItem)}
                     >
                         <div className="mb-3 flex items-start justify-between gap-3">
                             <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text">{importItem.name}</span>
@@ -113,15 +122,16 @@ function ImportsTable({
                             key={`desktop-skeleton-${index}`}
                             className={`flex w-full items-center px-4 py-3 text-sm sm:px-6 ${index !== itemsPerPage - 1 ? "border-b-custom" : ""}`}
                         >
-                            <span className="h-4 w-[35%] animate-pulse rounded bg-bgBtnSecondary" />
-                            <span className="mr-2 h-4 w-[15%] animate-pulse rounded bg-bgBtnSecondary" />
-                            <span className="h-4 w-[35%] animate-pulse rounded bg-bgBtnSecondary" />
-                            <span className="h-4 w-[25%] animate-pulse rounded bg-bgBtnSecondary" />
+                            <LoadData className="h-4 w-[35%]" />
+                            <LoadData className="mr-2 h-4 w-[15%]" />
+                            <LoadData className="h-4 w-[35%]" />
+                            <LoadData className="h-4 w-[25%]" />
                         </div>
                     )) : paginatedImports.map((importItem, index) => (
                         <div
                             key={importItem.id}
-                            className={`flex w-full items-center px-4 py-3 text-sm sm:px-6 ${index !== itemsPerPage - 1 ? "border-b-custom" : ""}`}
+                            className={`flex w-full items-center px-4 py-3 text-sm sm:px-6 ${index !== paginatedImports.length - 1 ? "border-b-custom" : ""} ${onRowClick ? "cursor-pointer transition-colors hover:bg-bgBtnSecondary" : ""}`}
+                            onClick={() => onRowClick?.(importItem)}
                         >
                             <span className="w-[35%] truncate pr-2 text-ellipsis">{importItem.name}</span>
                             <span className="mr-2 w-[15%]">
@@ -134,7 +144,7 @@ function ImportsTable({
                             </span>
                             <div className="w-[35%]">
                                 <ProgressBar progress={importItem.progress} status={importItem.status} />
-                            </div> {/* For demo purposes, we set progress to 100% directly */}
+                            </div>
                             <span className="w-[25%] pl-16">{formatUpdatedAt(importItem.updatedAt)}</span>
                         </div>
                     ))}

@@ -22,7 +22,8 @@
       "export": "Export",
       "new": "New import",
       "cancel": "Cancel",
-      "create": "Create"
+      "create": "Create",
+      "delete": "Delete"
     },
     "filter": "Filter by status",
     "filterOptions": {
@@ -50,7 +51,8 @@
       "noMoreFiles": "You can upload a maximum of {numberFiles} files.",
       "fileTypeError": "Invalid file format for {type}. Allowed extensions: {allowed}.",
       "nameError": "The import name is required.",
-      "fileError": "The file is required."
+      "fileError": "The file is required.",
+      "fileUploadError": "Import created, but the file could not be uploaded to storage."
     },
     "empty": {
       "title": "No imports found",
@@ -58,6 +60,19 @@
       "cta": "Create import"
     },
     "detail": {
+      "back": "Back to imports",
+      "fileUnavailable": "The original file is not available for this import.",
+      "downloadError": "Failed to download the file.",
+      "deleteSuccess": "Import deleted successfully.",
+      "deleteError": "Failed to delete the import.",
+      "fields": {
+        "type": "Type",
+        "status": "Status",
+        "progress": "Progress",
+        "duration": "Duration",
+        "createdAt": "Created at",
+        "updatedAt": "Updated at"
+      },
       "empty": {
         "title": "Details not available",
         "description": "We don’t have data for this import yet. Try again later or check overall status.",
@@ -81,5 +96,9 @@
       "ctaRetry": "Try again",
       "ctaDashboard": "Go to dashboard"
     }
+  },
+  "warning": {
+    "title": "Confirm import deletion",
+    "description": "You're about to delete this import irreversibly. All the associated datas will be finally removed and won't be recovered."
   }
 }

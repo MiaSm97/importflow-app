@@ -1,4 +1,8 @@
-import { ALLOWED_EXTENSIONS_BY_TYPE, Import } from "./types/types";
+import {
+  ALLOWED_EXTENSIONS_BY_TYPE,
+  Import,
+  ImportStatus,
+} from "./types/types";
 
 export const getFileExtension = (fileName: string) =>
   fileName.split(".").pop()?.toLowerCase() ?? "";
@@ -22,7 +26,21 @@ export const getColor = (status: string) => {
   }
 };
 
+export const getColorImportStatus = (status: ImportStatus) => {
+  switch (status) {
+    case ImportStatus.COMPLETED:
+      return "#10B981";
+    case ImportStatus.FAILED:
+      return "#F87171";
+    case ImportStatus.PENDING:
+      return "#FBBF24";
+    default:
+      return "#D1D5DB";
+  }
+};
+
 export const handleExportImports = (imports: Import[]) => {
+  // RFC4180-safe escaping: wrap every field and double any inner quotes.
   const escapeCsv = (value: string | number) =>
     `"${String(value).replace(/"/g, '""')}"`;
   const headers = [
@@ -46,6 +64,7 @@ export const handleExportImports = (imports: Import[]) => {
     ].join(","),
   );
 
+  // Build and trigger a client-side CSV download without server roundtrip.
   const csv = [headers.join(","), ...rows].join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
@@ -57,4 +76,20 @@ export const handleExportImports = (imports: Import[]) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+export const formatDateToSeconds = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 };

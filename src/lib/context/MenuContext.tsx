@@ -29,6 +29,7 @@ type MenuContextProps = {
     imports: Import[];
     importsLoaded: boolean;
     addImport: (newImport: Import) => void;
+    removeImport: (id: string) => void;
     loadAllImports: () => Promise<void>;
 };
 
@@ -57,11 +58,13 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const [loadingCount, setLoadingCount] = useState(0);
     const [imports, setImports] = useState<Import[]>([]);
     const [importsLoaded, setImportsLoaded] = useState(false);
+    // Avoid duplicate informational toasts when repository falls back to local mode.
     const localModeToastShownRef = useRef(false);
+    // Deduplicate concurrent full-load requests across consumers.
     const loadingAllImportsRef = useRef<Promise<void> | null>(null);
 
     const addToast = useCallback((message: string, type: "alert" | "info") => {
-        setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
+        setToasts((prev) => [...prev, { id: Date.now() + Math.random(), message, type }]);
     }, []);
 
     const toastAlert = useCallback((message: string) => addToast(message, "alert"), [addToast]);
@@ -74,12 +77,16 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
     const addImport = useCallback((newImport: Import) => {
         setImports((prev) => [newImport, ...prev]);
     }, []);
+    const removeImport = useCallback((id: string) => {
+        setImports((prev) => prev.filter((item) => item.id !== id));
+    }, []);
     const loadAllImports = useCallback(async () => {
         if (importsLoaded) {
             return;
         }
 
         if (loadingAllImportsRef.current) {
+            // Reuse in-flight request instead of triggering another fetch.
             await loadingAllImportsRef.current;
             return;
         }
@@ -129,17 +136,18 @@ const MenuProvider = ({ children }: { children: React.ReactNode }) => {
             imports,
             importsLoaded,
             addImport,
+            removeImport,
             loadAllImports,
         }),
-        [optionsMenu, toastAlert, toastInfo, isLoading, showLoader, hideLoader, imports, importsLoaded, addImport, loadAllImports]
+        [optionsMenu, toastAlert, toastInfo, isLoading, showLoader, hideLoader, imports, importsLoaded, addImport, removeImport, loadAllImports]
     );
 
     return (
         <MenuContext.Provider value={contextValue}>
             {children}
             <div className={styles.toastContainer}>
-                {toasts.map((toast, index) => (
-                    <Toast key={index} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+                {toasts.map((toast) => (
+                    <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
                 ))}
             </div>
         </MenuContext.Provider>

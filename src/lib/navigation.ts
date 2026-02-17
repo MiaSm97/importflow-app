@@ -8,6 +8,7 @@ export function getSectionPath(step: Sections, importId?: string) {
     case Sections.IMPORTS:
       return "/imports";
     case Sections.DETAIL:
+      // The detail route is valid only when an import id is provided by caller.
       return `/imports/${importId}/detail`;
     default:
       return "/imports";

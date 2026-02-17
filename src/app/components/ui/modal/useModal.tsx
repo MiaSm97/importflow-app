@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 export default function useModal() {
-    const [isOpen, setisOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const toggle = () => {
-        setisOpen(!isOpen);
+        // Single toggle API keeps modal state transitions predictable.
+        setIsOpen((prev) => !prev);
     };
 
     return {

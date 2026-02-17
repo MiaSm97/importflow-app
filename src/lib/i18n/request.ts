@@ -7,6 +7,7 @@ const defaultLocale = 'it';
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;
 
+  // Fallback protects against unsupported locale values in URL/cookies.
   if (!locale || !hasLocale(locales, locale)) {
     locale = defaultLocale;
   }

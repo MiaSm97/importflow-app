@@ -1,6 +1,7 @@
 import { ImportStatus } from "@/lib/types/types";
 import type { CSSProperties } from "react";
 import styles from "./ProgressBar.module.css";
+import { getColorImportStatus } from "@/lib/commonFunctions";
 
 type ProgressBarProps = {
     progress?: number;
@@ -12,20 +13,8 @@ type ProgressStyle = CSSProperties & {
 };
 
 function ProgressBar({ progress, status }: ProgressBarProps) {
-    const getColor = () => {
-        switch (status) {
-            case ImportStatus.COMPLETED:
-                return "#10B981";
-            case ImportStatus.FAILED:
-                return "#F87171";
-            case ImportStatus.PENDING:
-                return "#FBBF24";
-            default:
-                return "#D1D5DB";
-        }
-    };
-
-    const progressStyle: ProgressStyle = { "--progress-color": getColor() };
+    // CSS custom property lets module CSS style pseudo-elements consistently.
+    const progressStyle: ProgressStyle = { "--progress-color": getColorImportStatus(status) };
 
     return <progress className={styles.progress} style={progressStyle} value={progress ?? (status === ImportStatus.COMPLETED ? 100 : 0)} max={100} />;
 }

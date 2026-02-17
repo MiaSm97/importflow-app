@@ -1,8 +1,7 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import styles from "./DragNDrop.module.css";
 import FilePreview from "./FilePreview";
 import { FiUpload } from "react-icons/fi";
-// import add_icon from "@/app/assets/ic-add-w.svg";
 
 type DragNDropProps = {
     title?: string;
@@ -28,14 +27,14 @@ function DragNDrop({
     addFileCallback,
 }: DragNDropProps) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [inputValue] = useState("");
 
     const hasMultipleError = (newFilesLength: number): boolean => {
         const length = files.length + newFilesLength;
         const singleError = single && length > 1;
         const multipleError = !single && Number.isInteger(maxFiles) && length > maxFiles;
         if (singleError || multipleError) {
-            if (typeof multipleFilesErrorCallback == "function") {
+            // Keep validation side effects centralized in one place.
+            if (typeof multipleFilesErrorCallback === "function") {
                 multipleFilesErrorCallback();
             }
             return true;
@@ -59,13 +58,16 @@ function DragNDrop({
 
     const dropHandler = (e: React.DragEvent<HTMLDivElement>): void => {
         e.preventDefault();
+        // Validate the whole drop before reading file items one by one.
         if (hasMultipleError(e.dataTransfer.items.length)) {
             return;
         }
         for (const item of e.dataTransfer.items) {
             if (item.kind === "file") {
                 const file = item.getAsFile();
-                addFile(file as File);
+                if (file) {
+                    addFile(file);
+                }
             }
         }
     };
@@ -84,7 +86,7 @@ function DragNDrop({
         <>
             {topText && <div className={styles.topText}>{topText}</div>}
             <div className={`${styles.dropField} cursor-pointer`} onDragOver={dragHandler} onDrop={dropHandler}>
-                <input type="file" style={{ display: "none" }} ref={inputRef} value={inputValue} onChange={handleChange} multiple={!single} />
+                <input type="file" style={{ display: "none" }} ref={inputRef} onChange={handleChange} multiple={!single} />
                 <div className="flex items-center flex-col gap-4" onClick={() => inputRef?.current?.click()}>
                     <FiUpload className="w-8 h-8 text-textGray mt-6" />
                     {title && <div className={styles.title}>{title}</div>}
@@ -93,7 +95,7 @@ function DragNDrop({
             </div>
             <div className={`${styles.filesPreview} text-left`}>
                 {files.map((file, i) => (
-                    <FilePreview key={i} file={file} styles={styles} onRemove={() => removeFileCallback!(file)} />
+                    <FilePreview key={`${file.name}-${i}`} file={file} styles={styles} onRemove={removeFileCallback ? () => removeFileCallback(file) : undefined} />
                 ))}
             </div>
         </>

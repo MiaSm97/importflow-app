@@ -7,7 +7,7 @@ import { useMenu } from "@/lib/context/MenuContext";
 import Button from "../ui/button/Button";
 import { isFileTypeValid } from "@/lib/commonFunctions";
 import Box from "../box/Box";
-import { createImport as createImportRecord } from "@/lib/data/importsRepository";
+import { createImport as createImportRecord, uploadImportFile } from "@/lib/data/importsRepository";
 
 type NewImportProps = {
     toggle: () => void;
@@ -22,6 +22,7 @@ function NewImport({ toggle }: NewImportProps) {
     const [delimiter, setDelimiter] = useState<Delimiter>(Delimiter.COMMA);
 
     const addFile = (file: File) => {
+        // Type validation is enforced before cardinality checks to show precise feedback.
         if (!isFileTypeValid(file, type)) {
             toastAlert(
                 t("imports.new.fileTypeError", {
@@ -53,12 +54,18 @@ function NewImport({ toggle }: NewImportProps) {
 
         showLoader();
         try {
+            // Demo behavior: new imports are immediately marked as completed.
             const createdImport = await createImportRecord({
                 name,
                 type,
-                status: ImportStatus.COMPLETED, // For demo purposes, we set it to completed directly
+                status: ImportStatus.COMPLETED,
                 progress: 100,
             });
+            try {
+                await uploadImportFile(createdImport.id, files[0]);
+            } catch {
+                toastAlert(t("imports.new.fileUploadError"));
+            }
             addImport(createdImport);
             toggle();
         } finally {
@@ -72,7 +79,6 @@ function NewImport({ toggle }: NewImportProps) {
             <h1 className="px-4 text-[18px] font-bold sm:px-6">{t("imports.buttons.new")}</h1>
             <Input label={t("imports.new.name")} value={name} onChange={(e) => setName(e.target.value)} className="border-t-custom px-4 pt-6 sm:px-6 sm:pt-8" classNameInput="w-full" />
             <Input label={t('imports.new.type')} onChange={(e) => {
-                console.log(e)
                 setType(e.target.value as ImportType)}} className="px-4 sm:px-6" type="select" value={type} classNameInput="w-full">
                 <option value={ImportType.CSV}>{ImportType.CSV}</option>
                 <option value={ImportType.EXCEL}>{ImportType.EXCEL}</option>

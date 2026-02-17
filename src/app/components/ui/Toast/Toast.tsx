@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "@/app/components/ui/Toast/Toast.module.css";
-import AlertIcon from "@/app/components/ui/icons/AlertIcon";
+import { FiAlertTriangle } from "react-icons/fi";
 import InfoIcon from "@/app/components/ui/icons/InfoIcon";
 
 type ToastProps = {
@@ -13,8 +13,9 @@ const Toast = ({ message, type, onClose }: ToastProps) => {
     const [isClosing, setIsClosing] = useState(false);
 
     useEffect(() => {
-        const startFadeOut = setTimeout(() => setIsClosing(true), 4000); // fade-out dopo 4 secondi
-        const autoClose = setTimeout(onClose, 4300); // rimuovo i toast dal dom dopo 4.3 secondi
+        // Start CSS fade-out slightly before unmounting for a smoother exit.
+        const startFadeOut = setTimeout(() => setIsClosing(true), 4000);
+        const autoClose = setTimeout(onClose, 4300);
 
         return () => {
             clearTimeout(startFadeOut);
@@ -24,7 +25,7 @@ const Toast = ({ message, type, onClose }: ToastProps) => {
 
     return (
         <div className={`flex items-center gap-2 ${styles.toast} ${styles[type]} ${isClosing ? styles.fadeOut : ""}`}>
-            <span className="">{type === "alert" ? <AlertIcon /> : <InfoIcon />}</span>
+            <span className="">{type === "alert" ? <FiAlertTriangle /> : <InfoIcon />}</span>
             <span className="text-sm">{message}</span>
         </div>
     );

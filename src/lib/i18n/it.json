@@ -22,7 +22,8 @@
       "export": "Esporta dati",
       "new": "Nuovo import",
       "cancel": "Annulla",
-      "create": "Crea"
+      "create": "Crea",
+      "delete": "Elimina"
     },
     "filter": "Filtra per stato",
     "filterOptions": {
@@ -55,7 +56,8 @@
       "noMoreFiles": "Puoi caricare al massimo {numberFiles} file.",
       "fileTypeError": "Formato file non valido per {type}. Estensioni consentite: {allowed}.",
       "nameError": "Il nome dell'importazione è obbligatorio.",
-      "fileError": "Il file è obbligatorio."
+      "fileError": "Il file è obbligatorio.",
+      "fileUploadError": "Import creato, ma non è stato possibile caricare il file su storage."
     },
     "empty": {
       "title": "Nessun import trovato",
@@ -63,6 +65,19 @@
       "cta": "Nuovo import"
     },
     "detail": {
+      "back": "Torna agli import",
+      "fileUnavailable": "Il file originale non è disponibile per questo import.",
+      "downloadError": "Errore durante il download del file.",
+      "deleteSuccess": "Import eliminato con successo.",
+      "deleteError": "Errore durante l'eliminazione dell'import.",
+      "fields": {
+        "type": "Tipo",
+        "status": "Stato",
+        "progress": "Progresso",
+        "duration": "Durata",
+        "createdAt": "Creato il",
+        "updatedAt": "Aggiornato il"
+      },
       "empty": {
         "title": "Dettagli non disponibili",
         "description": "Non abbiamo ancora dati per questa importazione. Riprova più tardi o controlla lo stato generale.",
@@ -86,5 +101,9 @@
       "ctaRetry": "Riprova",
       "ctaDashboard": "Vai alla dashboard"
     }
+  },
+  "warning": {
+    "title": "Conferma eliminazione import",
+    "description": "Stai per eliminare questo import in modo irreversibile. Tutti i dati associati verranno rimossi definitivamente e non potranno essere recuperati."
   }
 }

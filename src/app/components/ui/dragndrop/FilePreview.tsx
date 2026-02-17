@@ -24,10 +24,11 @@ function FilePreview({ file, onRemove, styles, children, className, date, onDown
 
     const getExt = (filename: string) => filename.split(".").pop() || "";
 
-    const checkIsImage = (ext: string): boolean => ["jpeg", "jpg", "bmp", "png", "gif", "svg"].some((item) => item == ext);
+    const checkIsImage = (ext: string): boolean => ["jpeg", "jpg", "bmp", "png", "gif", "svg"].includes(ext.toLowerCase());
 
     useEffect(() => {
         if (isFileInstance(file)) {
+            // Convert the file to data URL only for local preview rendering.
             const reader = new FileReader();
             reader.onloadend = function () {
                 const result = reader.result;
@@ -36,6 +37,12 @@ function FilePreview({ file, onRemove, styles, children, className, date, onDown
             };
             reader.readAsDataURL(file);
             setIsImage(checkIsImage(getExt(file.name)));
+
+            return () => {
+                if (reader.readyState === FileReader.LOADING) {
+                    reader.abort();
+                }
+            };
         }
     }, [file]);
 
