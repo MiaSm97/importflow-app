@@ -1,5 +1,7 @@
+import { deleteImport } from "./data/importsRepository";
 import {
   ALLOWED_EXTENSIONS_BY_TYPE,
+  DeleteImport,
   Import,
   ImportStatus,
 } from "./types/types";
@@ -9,7 +11,11 @@ export const getFileExtension = (fileName: string) =>
 
 export const isFileTypeValid = (file: File, type: string) => {
   const fileExtension = getFileExtension(file.name);
-  const allowedExtensions = ALLOWED_EXTENSIONS_BY_TYPE[type];
+  const allowedExtensions =
+    ALLOWED_EXTENSIONS_BY_TYPE[type as keyof typeof ALLOWED_EXTENSIONS_BY_TYPE];
+  if (!allowedExtensions) {
+    return false;
+  }
   return allowedExtensions.includes(fileExtension);
 };
 
@@ -92,4 +98,24 @@ export const formatDateToSeconds = (value: string) => {
     minute: "2-digit",
     second: "2-digit",
   });
+};
+
+export const executeDeleteImport = async ({
+  importId,
+  showLoader,
+  hideLoader,
+  removeImport,
+  onSuccess,
+  onError,
+}: DeleteImport) => {
+  showLoader();
+  try {
+    await deleteImport(importId);
+    removeImport(importId);
+    onSuccess?.();
+  } catch {
+    onError?.();
+  } finally {
+    hideLoader();
+  }
 };

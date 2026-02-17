@@ -26,11 +26,16 @@
       "delete": "Delete"
     },
     "filter": "Filter by status",
+    "search": "Search",
+    "searchPlaceholder": "Search by name or ID",
     "filterOptions": {
       "all": "All",
       "completed": "Completed",
       "pending": "Pending",
-      "failed": "Failed"
+      "failed": "Failed",
+      "name": "Name",
+      "updatedAt": "Last updated",
+      "status": "Status"
     },
     "table": {
       "name": "Name",

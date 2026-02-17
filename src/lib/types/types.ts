@@ -57,3 +57,18 @@ export enum ImportStatus {
   COMPLETED = "completed",
   FAILED = "failed",
 }
+
+export enum ImportFilter {
+  STATUS = "status",
+  UPDATEDAT = "updatedAt",
+  NAME = "name",
+}
+
+export type DeleteImport = {
+  importId: string;
+  showLoader: () => void;
+  hideLoader: () => void;
+  removeImport: (id: string) => void;
+  onSuccess?: () => void;
+  onError?: () => void;
+};

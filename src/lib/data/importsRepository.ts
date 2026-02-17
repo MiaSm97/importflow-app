@@ -28,6 +28,7 @@ type ListImportsPageInput = {
   limit: number;
   offset: number;
   status?: ImportStatus;
+  search?: string;
 };
 
 type ListImportsPageResult = {
@@ -192,12 +193,40 @@ const getLocalImportsByStatus = (status?: ImportStatus): Import[] => {
   return imports.filter((item) => item.status === status);
 };
 
+const filterImportsBySearch = (imports: Import[], search?: string): Import[] => {
+  const normalizedSearch = search?.trim().toLowerCase();
+  if (!normalizedSearch) {
+    return imports;
+  }
+
+  return imports.filter((item) => {
+    const normalizedName = item.name.toLowerCase();
+    const normalizedId = item.id.toLowerCase();
+    return (
+      normalizedName.includes(normalizedSearch)
+      || normalizedId.includes(normalizedSearch)
+    );
+  });
+};
+
+const escapeSearchForPostgrestOr = (search: string) =>
+  search.replaceAll("\\", "\\\\").replaceAll(",", "\\,").replaceAll("(", "\\(").replaceAll(")", "\\)");
+
+const isUuid = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+
 const getLocalImportsPage = (
   limit: number,
   offset: number,
   status?: ImportStatus,
+  search?: string,
 ): ListImportsPageResult => {
-  const filteredImports = getLocalImportsByStatus(status);
+  const filteredImports = filterImportsBySearch(
+    getLocalImportsByStatus(status),
+    search,
+  );
   return {
     imports: filteredImports.slice(offset, offset + limit),
     total: filteredImports.length,
@@ -273,10 +302,12 @@ export const listImportsPage = async ({
   limit,
   offset,
   status,
+  search,
 }: ListImportsPageInput): Promise<ListImportsPageResult> => {
   // Sanitize pagination input to keep URL params and local fallback aligned.
   const normalizedLimit = Math.max(1, limit);
   const normalizedOffset = Math.max(0, offset);
+  const normalizedSearch = search?.trim();
   const shouldFilterByStatus = status && status !== ImportStatus.ALL;
 
   const config = getSupabaseConfig();
@@ -286,6 +317,7 @@ export const listImportsPage = async ({
       normalizedLimit,
       normalizedOffset,
       shouldFilterByStatus ? status : undefined,
+      normalizedSearch,
     );
   }
 
@@ -300,6 +332,18 @@ export const listImportsPage = async ({
     if (shouldFilterByStatus) {
       params.set("status", `eq.${status}`);
     }
+    if (normalizedSearch) {
+      const escapedSearch = escapeSearchForPostgrestOr(normalizedSearch);
+      const orFilters = [`name.ilike.*${escapedSearch}*`];
+      if (isUuid(normalizedSearch)) {
+        // `id` is UUID in Supabase; use equality only when the search term is a valid UUID.
+        orFilters.push(`id.eq.${normalizedSearch}`);
+      }
+      params.set(
+        "or",
+        `(${orFilters.join(",")})`,
+      );
+    }
 
     const response = await fetch(`${config.url}/rest/v1/imports?${params}`, {
       headers: getSupabaseHeaders(config, {
@@ -309,7 +353,10 @@ export const listImportsPage = async ({
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch paginated imports from Supabase");
+      const errorBody = await response.text();
+      throw new Error(
+        `Failed to fetch paginated imports from Supabase (${response.status}): ${errorBody}`,
+      );
     }
 
     const rows = (await response.json()) as SupabaseImportRow[];
@@ -324,6 +371,7 @@ export const listImportsPage = async ({
       normalizedLimit,
       normalizedOffset,
       shouldFilterByStatus ? status : undefined,
+      normalizedSearch,
     );
   }
 };
@@ -417,7 +465,9 @@ export const deleteImport = async (id: string): Promise<void> => {
       `${config.url}/rest/v1/imports?id=eq.${id}`,
       {
         method: "DELETE",
-        headers: getSupabaseHeaders(config),
+        headers: getSupabaseHeaders(config, {
+          Prefer: "return=representation",
+        }),
       },
     );
 
@@ -425,6 +475,15 @@ export const deleteImport = async (id: string): Promise<void> => {
       throw new Error("Failed to delete import from Supabase");
     }
 
+    const deletedRows = (await deleteImportResponse.json()) as SupabaseImportRow[];
+    if (!Array.isArray(deletedRows) || deletedRows.length === 0) {
+      throw new Error(
+        "Delete request succeeded but no rows were deleted. Check Supabase RLS delete policy.",
+      );
+    }
+
+    // The DB row is the source of truth for list visibility.
+    // If storage cleanup fails, keep the deletion successful and log the issue.
     const fileInfo = await getImportFileInfo(id);
     if (fileInfo?.fileName) {
       const filePath = toStoragePath(id, fileInfo.fileName);
@@ -440,14 +499,17 @@ export const deleteImport = async (id: string): Promise<void> => {
       );
 
       if (!deleteFileResponse.ok) {
-        throw new Error("Failed to delete import file from Supabase Storage");
+        logRepositoryError(
+          "deleteImport",
+          new Error("Failed to delete import file from Supabase Storage"),
+        );
       }
     }
 
   } catch (error) {
     logRepositoryError("deleteImport", error);
     notifyLocalMode("supabase-error");
-    removeLocalImportById(id);
+    throw error;
   }
 };
 

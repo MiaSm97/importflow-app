@@ -51,7 +51,11 @@ export default function DashboardPage() {
           numberOfImports={completedImports}
         />
       </div>
-      <ImportsTable onExport={() => handleExportImports(latestImports)} imports={latestImports} />
+      <ImportsTable
+        onExport={() => handleExportImports(latestImports)}
+        imports={latestImports}
+        showSorting={false}
+      />
       {failedImports > 0 && <WarmingBanner />}
     </div>
   );

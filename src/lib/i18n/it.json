@@ -26,11 +26,16 @@
       "delete": "Elimina"
     },
     "filter": "Filtra per stato",
+    "search": "Cerca",
+    "searchPlaceholder": "Cerca per nome o ID",
     "filterOptions": {
       "all": "Tutti",
       "completed": "Completati",
       "pending": "In corso",
-      "failed": "Falliti"
+      "failed": "Falliti",
+      "name": "Nome",
+      "updatedAt": "Ultimo aggiornamento",
+      "status": "Stato"
     },
     "status": {
       "completed": "Completato",

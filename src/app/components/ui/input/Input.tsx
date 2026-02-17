@@ -84,7 +84,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
                 <select
                     name={name}
                     onChange={onChange}
-                    className={`text-black bg-white text-ellipsis rounded-lg border border-textGray outline-none py-2 px-3 ${classNameInput ?? ""}`}
+                    className={`text-black bg-white text-ellipsis rounded-lg border border-textGray outline-none py-2 pr-3 pl-1 ${classNameInput ?? ""}`}
                     required={required}
                     multiple={multiple}
                     value={value}
@@ -121,7 +121,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
                         ref={ref as React.Ref<HTMLInputElement>}
                         name={name}
                         onChange={onChange}
-                        className={`placeholder:text-[12px] bg-white h-7.5 text-black text-ellipsis rounded-lg border border-textGray outline-none py-2 ${type === "search" ? "pl-6" : "pl-3"} pr-3 ${classNameInput ?? ""}`}
+                        className={`placeholder:text-[12px] bg-white h-9 text-black text-ellipsis rounded-lg border border-textGray outline-none py-2 ${type === "search" ? "pl-6" : "pl-3"} pr-3 ${classNameInput ?? ""}`}
                         type={type ?? "text"}
                         required={required}
                         maxLength={maxLength}
@@ -136,8 +136,8 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(({
                     />
                     {type === "search" && (
                         // Icon is absolutely positioned so the input padding stays consistent.
-                        <div className="absolute top-1.25 left-1">
-                            {SearchIcon()}
+                        <div className="absolute top-2 left-1">
+                            <SearchIcon />
                         </div>
                     )}
                 </div>

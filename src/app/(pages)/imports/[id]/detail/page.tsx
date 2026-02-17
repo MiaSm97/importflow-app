@@ -4,21 +4,20 @@ import Box from '@/app/components/box/Box';
 import Button from '@/app/components/ui/button/Button';
 import LoadData from '@/app/components/loading/LoadData';
 import { GiReturnArrow } from "react-icons/gi";
-import { AiTwotoneDelete } from "react-icons/ai";
 import { IoFileTray } from "react-icons/io5";
 import { SiFiles } from "react-icons/si";
-import { PiDownloadDuotone } from "react-icons/pi";
 import { useMenu } from '@/lib/context/MenuContext';
-import { deleteImport, getImportById, getImportFileDownload, getImportFileInfo } from '@/lib/data/importsRepository';
+import { getImportById, getImportFileInfo } from '@/lib/data/importsRepository';
 import { Import } from '@/lib/types/types';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import useModal from '@/app/components/ui/modal/useModal';
 import CardDetail, { CardDetailProps } from '@/app/components/card/CardDetail';
-import { formatDateToSeconds, getColorImportStatus } from '@/lib/commonFunctions';
+import { executeDeleteImport, formatDateToSeconds, getColorImportStatus } from '@/lib/commonFunctions';
 import Modal from '@/app/components/ui/modal/Modal';
 import WarningPopup from '@/app/components/popup/WarningPopup';
+import Actions from '@/app/components/ui/actions/Actions';
 
 export default function ImportDetailPage() {
   const t = useTranslations();
@@ -145,64 +144,23 @@ export default function ImportDetailPage() {
     return `${value.toFixed(1)} ${units[unitIndex]}`;
   };
 
-  const handleDownloadImportFile = async () => {
-    if (!importDetail) {
-      return;
-    }
-
-    const file = await getImportFileDownload(importDetail.id);
-    if (!file) {
-      toastAlert(t("imports.detail.fileUnavailable"));
-      return;
-    }
-
-    try {
-      if (file.url.startsWith("data:")) {
-        const link = document.createElement("a");
-        link.href = file.url;
-        link.download = file.fileName || `${importDetail.name}.dat`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-      }
-
-      const response = await fetch(file.url);
-      if (!response.ok) {
-        throw new Error("Failed to download file");
-      }
-
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = file.fileName || `${importDetail.name}.dat`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(objectUrl);
-    } catch {
-      toastAlert(t("imports.detail.downloadError"));
-    }
-  };
-
   const handleDeleteImport = async () => {
-    if (!importDetail) {
-      return;
-    }
+    if (!importDetail) return;
 
-    showLoader();
-    try {
-      await deleteImport(importDetail.id);
-      removeImport(importDetail.id);
-      toastInfo(t("imports.detail.deleteSuccess"));
-      toggle();
-      router.push('/imports');
-    } catch {
-      toastAlert(t("imports.detail.deleteError"));
-    } finally {
-      hideLoader();
-    }
+    await executeDeleteImport({
+      importId: importDetail.id,
+      showLoader,
+      hideLoader,
+      removeImport,
+      onSuccess: () => {
+        toastInfo(t("imports.detail.deleteSuccess"));
+        toggle();
+        router.push("/imports");
+      },
+      onError: () => {
+        toastAlert(t("imports.detail.deleteError"));
+      },
+    });
   };
 
   const formattedFileSize = useMemo(() => formatFileSize(fileSize), [fileSize]);
@@ -248,13 +206,7 @@ export default function ImportDetailPage() {
         <div className="flex flex-col gap-3">
           <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
             <h1 className="min-w-0 wrap-break-word text-xl font-bold leading-tight sm:text-[22px]">{importDetail.name}</h1>
-            <div className='flex items-center gap-4 self-start sm:self-auto'>
-              <AiTwotoneDelete className='h-5 w-5 cursor-pointer sm:h-[22px] sm:w-[22px]' onClick={toggle} />
-              <PiDownloadDuotone
-                className='h-5 w-5 cursor-pointer sm:h-[22px] sm:w-[22px]'
-                onClick={() => { void handleDownloadImportFile(); }}
-              />
-            </div>
+            <Actions toggle={toggle} importItem={importDetail} />
           </div>
           <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-textGray sm:text-sm'>
             <span className='break-all'>ID: {importDetail.id}</span>
@@ -279,9 +231,9 @@ export default function ImportDetailPage() {
           )}
         </div>
       </div>
-        <Modal isOpen={isOpen}>
-          <WarningPopup toggle={toggle} onSubmit={() => { void handleDeleteImport(); }} />
-        </Modal>
+      <Modal isOpen={isOpen}>
+        <WarningPopup toggle={toggle} onSubmit={() => { void handleDeleteImport(); }} />
+      </Modal>
     </>
   );
 }
